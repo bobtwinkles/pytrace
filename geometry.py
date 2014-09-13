@@ -40,9 +40,9 @@ class Vec3:
             for i in range(0, 3):
                 if c[i] == 'x':
                     data.append(self.x)
-                if c[i] == 'y':
+                elif c[i] == 'y':
                     data.append(self.y)
-                if c[i] == 'z':
+                elif c[i] == 'z':
                     data.append(self.z)
             return Vec3(data[0], data[1], data[2])
         else:
