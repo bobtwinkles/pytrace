@@ -3,3 +3,5 @@
 # ignore python junk
 env/
 __pycache__/
+# ignore the input files
+data/
