@@ -5,6 +5,7 @@ from os import path
 from mesh import *
 from geometry import Vec3
 from materials import BSDF
+from world import World
 
 class ObjMaterial:
     """ an Wavefront Object material specification """
@@ -102,6 +103,7 @@ def load(fname_base):
                 data.faces.append(tri)
 
     print("Read {vcount} verts and {ncount} normals, which formed {fcount} faces".format(vcount=len(data.verts), ncount=len(data.normals), fcount=len(data.faces)))
+    return World(data.faces)
 
 if __name__ == '__main__':
     import sys

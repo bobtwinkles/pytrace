@@ -1,5 +1,6 @@
 import math
 import numbers
+import copy
 
 class Vec3:
     def __init__(self, x, y, z):
@@ -80,9 +81,26 @@ class Vec3:
     def __repr__(self):
         return "<{x}, {y}, {z}>".format(x=self.x, y=self.y, z=self.z)
 
+def get_min_max_vec3(l):
+    i = copy.copy(l[0]) # mIn
+    a = copy.copy(l[0]) # mAx
+    for j in l:
+        if j.x < i.x:
+            j.x = i.x
+        elif j.x > a.x:
+            a.x = j.x
+        if j.y < i.y:
+            j.y = i.y
+        elif j.y > a.y:
+            a.y = j.y
+        if j.z < i.z:
+            j.z = i.z
+        elif j.z > a.z:
+            a.z = j.z
+    return (i, a)
 
 class BoundingVolume:
-    def __init__(self, a, b):
+    def __init__(self, a, b, content):
         if not isinstance(a, Vec3):
             raise TypeError("a must be a Vec3")
         if not isinstance(b, Vec3):
@@ -90,6 +108,7 @@ class BoundingVolume:
         self._a = a
         self._b = b
         self.recompute_corners()
+        self.content = content
 
     def get_width(self):
         return self.b.x - self.a.x
