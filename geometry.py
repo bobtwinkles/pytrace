@@ -34,6 +34,12 @@ class Vec3:
     def dot(self, other):
         return self.x * other.x + self.y * other.y + self.z * other.z
 
+    def dist2(self, other):
+        return ( self.x - other.x ) ** 2 + ( self.y - other.y ) ** 2 + ( self.z - other.z) ** 2
+
+    def dist(self, other):
+        return math.sqrt(self.dist2(other))
+
     # implement vector swizling for no good reason other than "BECAUSE WE CAN"
     def __getattribute__(self, name):
         if len(name) == 3 and all([c in "xyz" for c in name]):
@@ -86,15 +92,15 @@ def get_min_max_vec3(l):
     a = copy.copy(l[0]) # mAx
     for j in l:
         if j.x < i.x:
-            j.x = i.x
+            i.x = j.x
         elif j.x > a.x:
             a.x = j.x
         if j.y < i.y:
-            j.y = i.y
+            i.y = j.y
         elif j.y > a.y:
             a.y = j.y
         if j.z < i.z:
-            j.z = i.z
+            i.z = j.z
         elif j.z > a.z:
             a.z = j.z
     return (i, a)
@@ -140,6 +146,28 @@ class BoundingVolume:
                       ,max(a.y, b.y)
                       ,max(a.z, b.z))
 
+    def corners(self):
+        a = self.a
+        b = self.b
+        return [Vec3(a.x, a.y, a.z)
+               ,Vec3(a.x, a.y, b.z)
+               ,Vec3(a.x, b.y, a.z)
+               ,Vec3(a.x, b.y, b.z)
+               ,Vec3(b.x, a.y, a.z)
+               ,Vec3(b.x, a.y, b.z)
+               ,Vec3(b.x, b.y, a.z)
+               ,Vec3(b.x, b.y, b.z)]
+
+    def faces(self):
+        # We should be using ccw winding
+        corners = self.corners()
+        return [(corners[0], corners[1], corners[3], corners[2])
+               ,(corners[0], corners[4], corners[5], corners[1])
+               ,(corners[0], corners[2], corners[6], corners[4])
+               ,(corners[7], corners[3], corners[1], corners[5])
+               ,(corners[7], corners[5], corners[4], corners[6])
+               ,(corners[7], corners[6], corners[2], corners[3])]
+
     def get_b(self):
         return self._b
 
@@ -147,7 +175,7 @@ class BoundingVolume:
         if isinstance(p, Vec3):
             dp = p - self.a
             db = self.b - self.a
-            return db.x > dp.x and db.y > dp.y and db.z > dp.z
+            return db.x > dp.x and db.y > dp.y and db.z > dp.z and dp.x > 0 and dp.y > 0 and dp.z > 0
 
         return NotImplemented
 
@@ -162,3 +190,9 @@ class BoundingVolume:
     depth = property(get_depth)
     a = property(get_a, set_a)
     b = property(get_b, set_b)
+
+    def __str__(self):
+        return ("<BoundingVolume {_a} {_b}>".format(**self.__dict__))
+
+    def __repr__(self):
+        return ("<BoundingVolume {_a} {_b}>".format(**self.__dict__))
